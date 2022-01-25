@@ -10,8 +10,8 @@
 
        ORG    0100H
 
-       bdos=0005H    ; define BDOS entry point
-       bdos_conout=2 ; Console output character
+       bdos: equ 0005H    ; define BDOS entry point
+       bdos_conout: equ 2 ; Console output character
 
 ;------------------------------------------------------------------------
 ;  Start here 
@@ -21,7 +21,6 @@ main:
        LD     HL, header
        CALL   puts
        CALL   newline
-
        ; We will print 14 lines of 16 symbols
        LD     C, 14 
        LD     A, ' '    ; Start with char 20H, space 
@@ -57,17 +56,18 @@ putch:
 ;------------------------------------------------------------------------
 putdigit:
        PUSH   AF
-       CP     A, 10     ; Digit < 10, just add '0' 
-       JR     NC, putdigit_gt
-       ADD    A, '0'
-       CALL   putch
-       POP    AF
-       RET
-putdigit_gt:            ; Digit > 10
+       CP     10        ; Digit >= 10
+       JR     C, putdigit_lt
        ADD    A, 'A' - 10 
        CALL   putch
        POP    AF
        RET
+putdigit_lt:            ; Digit < 10
+       ADD    A, '0'
+       CALL   putch
+       POP    AF
+       RET
+
 
 ;------------------------------------------------------------------------
 ;  putnum
@@ -79,11 +79,11 @@ putnum:
        SRA    A
        SRA    A
        SRA    A
-       AND    A, 0x0F 
+       AND    0x0F 
        CALL   putdigit
        POP    AF
        PUSH   AF
-       AND    A, 0x0F 
+       AND    0x0F 
        CALL   putdigit
        POP    AF
        RET
@@ -100,14 +100,14 @@ doline:
        CALL   space
        LD     C, 16     ; 16 characters on the line
 doline_next:  
-       CMP    A, 7FH    ; Skip the del/rubout character
+       CP     7FH    ; Skip the del/rubout character
        JR     Z, doline_nodel
        CALL   putch
 doline_nodel:
        CALL   space
        INC    A
        DEC    C
-       JNZ    doline_next ; Loop until all 16 done
+       JR     NZ, doline_next ; Loop until all 16 done
        CALL   newline
        POP    BC 
        RET
@@ -147,7 +147,7 @@ puts:
        PUSH   DE 
 puts_next:
        LD     A,(HL) 
-       CP     A, 0 
+       OR     A, 0 
        JR     Z, puts_done
 
        LD     C, 2
@@ -176,6 +176,6 @@ exit:
 ; Data 
 ;------------------------------------------------------------------------
 header:
-	defm "   0 1 2 3 4 5 6 7 8 9 A B C D E F"
-        db 0
+	defb "   0 1 2 3 4 5 6 7 8 9 A B C D E F"
+        defb 0
 

@@ -21,6 +21,12 @@ Copy `cpmchars.com` to any CP/M drive.
 
 Just run `cpmchars` at the prompt.
 
+## Building
+
+The .ASM files are intended to be processed using Wijnen/Wilmans
+Z80 assembler for Linux. This is the version found in most Linux
+repositories (I think). To install, <code>apt-get install z80asm</code>. 
+
 ## Notes
 
 CP/M is essentially an ASCII system. Some CP/M programs use 8-bit 
@@ -40,6 +46,5 @@ CP/M programs that use these characters.
 It's a long time since I wrote Z80 code for a living, and I suspect that
 a skilled assembler programmer could do the same job in about ten
 lines of code.
-
 
 
